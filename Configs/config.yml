@@ -1,0 +1,13 @@
+prefix: ">>"
+
+id:
+  owner: '376857933067321366'
+  guild: [996033619783073914]
+
+activity_msg: 'Zzz'
+
+embed:
+  color: 0x800080
+  footer: 'zzzz'
+
+kill_array: [" stabbed ", " shot ", " seduced "]
