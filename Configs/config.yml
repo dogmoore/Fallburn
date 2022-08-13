@@ -1,13 +1,66 @@
+debug: False
+
 prefix: ">>"
 
 id:
-  owner: '376857933067321366'
+  owner: 376857933067321366
   guild: [996033619783073914]
+  confess_channel: 1004194887387852851
+  confess_log_channel: 1004194782568001607
+  mh_opt: 1004816869389246506
+  log_channel: 1004826573188386827
+  general: 996033621058129922
+  welcome_channel: 996035432888414238
+  hidden_welcome_channel: 1004826573188386827  # debug use
+  introduction_channel: 996067817109602315
+  react_roles_channel: 998607866829221939
+  level_roles_channel: 996036175204728922
+  report_channel: 1006014677811204176
+  report_log_channel: 1007733488964862133
+  suggestion_channel: 996035815962587226
 
-activity_msg: 'Zzz'
+activity_msg: 'Wake me up before you go go!'
 
 embed:
-  color: 0x800080
-  footer: 'zzzz'
+  color:
+    default: 0x800080
+    green: 0x00FF00
+    yellow: 0xFFFF00
+    red: 0xff0000
+  footer: 'Sleepy Will v1.3.1 | Created by dogmoore#3261'
 
-kill_array: [" stabbed ", " shot ", " seduced "]
+msg_arrays:
+  kill: [" stabbed ", " shot ", " seduced ", " threw a chair at ", " dropped an anvil on ", " dropped a piano on ",
+         " sat on ", " threw out of the world ", " glanced at ", " gave Covid to ", " threw a sharpie at "]
+  hug: [" tightly groped ", " bunny hugged ", " squeezed the life out of ", " locked onto ", " grip locked ",
+        " clasped to ", " embraced ", " forcibly hugged "]
+
+images:
+  urban: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Urban_Dictionary_logo.svg/1200px-Urban_Dictionary_logo.svg.png'
+
+module:
+  welcome: True
+  events: True  # completely disable ALL events in the event file
+  commands:
+    fun: True     # commands: slap, kill, urban
+    anon: True    # commands: confess, resources, reports
+    general: True # commands: ping
+    admin: True   # commands: say, ban, kick, mute
+  log:
+    fun: True
+    anon: False  # debug only
+    admin: True
+    message: True
+    channel: True
+    role: True
+    member: True
+    invite: True
+    mod: True
+    discord_auto_mod: True
+
+filter_list: [
+  "fag", "fag1t", "faget", "fagg1t", "faggit", "faggot", "fagit", "fags", "fagz", "faig", "faigs", "n1gr",  "nastt", "nigger", "nigur", "niiger", "niigr", "nigga"
+]
+
+buttons:
+  timeout: None  # in seconds

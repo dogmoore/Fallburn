@@ -1,3 +1,5 @@
 pyYaml
 nextcord
 colorama
+requests
+mysql-connector-python==8.0.12
