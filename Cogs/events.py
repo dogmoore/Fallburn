@@ -1,6 +1,7 @@
 import nextcord
 import yaml
 
+from nextcord.ext.application_checks import errors as application_errors
 from nextcord.ext import commands
 
 
@@ -36,12 +37,12 @@ class Events(commands.Cog):
         if self.config['module']['log']['message'] and self.config['module']['events']:
             if not before.author.id == self.client.user.id:
                 if not before.content == after.content:
-
                     log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
                     edit_embed = nextcord.Embed(
                         title=f'{before.author} made an edit',
-                        description=f'Member {before.author.mention} edited a message in {before.channel.mention}\n[Jump to message]({after.jump_url})',
+                        description=f'Member {before.author.mention} edited a message in {before.channel.mention}\n['
+                                    f'Jump to message]({after.jump_url})',
                         color=self.config['embed']['color']['yellow']
                     )
 
@@ -56,7 +57,6 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_bulk_message_delete(self, messages):  # message log
         if self.config['module']['log']['message'] and self.config['module']['events']:
-
             log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
             bulk_embed = nextcord.Embed(
@@ -71,7 +71,6 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, name):  # channel log
         if self.config['module']['log']['channel'] and self.config['module']['events']:
-
             log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
             channel_delete_embed = nextcord.Embed(
@@ -82,11 +81,10 @@ class Events(commands.Cog):
             channel_delete_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=channel_delete_embed)
-    
+
     @commands.Cog.listener()
     async def on_guild_channel_create(self, name):  # channel log
         if self.config['module']['log']['channel'] and self.config['module']['events']:
-
             log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
             channel_create_embed = nextcord.Embed(
@@ -97,11 +95,10 @@ class Events(commands.Cog):
             channel_create_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=channel_create_embed)
-    
+
     @commands.Cog.listener()
     async def on_guild_role_create(self, role):  # role log
         if self.config['module']['log']['role'] and self.config['module']['events']:
-
             log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
             role_create_embed = nextcord.Embed(
@@ -110,13 +107,40 @@ class Events(commands.Cog):
                 color=self.config['embed']['color']['green']
             )
 
-            role_create_embed.add_field(name='Color:', value=f'`{role.mention}`')
+            role_create_embed.add_field(name='Color:', value=f'`{role.color}`')
             role_create_embed.add_field(name='Hoisted:', value=role.hoist)
             role_create_embed.add_field(name='Mentionable:', value=role.mentionable)
             role_create_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=role_create_embed)
-    
+
+    @commands.Cog.listener()
+    async def on_guild_role_update(self, before, after):  # role log
+        if self.config['module']['log']['role'] and self.config['module']['events']:
+
+            log_channel = self.client.get_channel(self.config['id']['log_channel'])
+
+            role_edit_embed = nextcord.Embed(
+                title='Role got updated',
+                color=self.config['embed']['color']['yellow']
+            )
+
+            role_edit_embed.set_footer(text=self.config['embed']['footer'])
+
+            if not before.name == after.name:
+                role_edit_embed.add_field(name='Name Before', value=before.name, inline=True)
+                role_edit_embed.add_field(name='Name After', value=after.name, inline=True)
+                role_edit_embed.add_field(name='\u200b', value='\u200b', inline=False)
+            if not before.color == after.color:
+                role_edit_embed.add_field(name='Color Before', value=before.color, inline=True)
+                role_edit_embed.add_field(name='Color After', value=after.color, inline=True)
+                role_edit_embed.add_field(name='\u200b', value='\u200b', inline=False)
+            if not before.hoist == after.hoist:
+                role_edit_embed.add_field(name='Hoisted Before', value=before.hoist, inline=True)
+                role_edit_embed.add_field(name='Hoisted After', value=after.hoist, inline=True)
+
+            await log_channel.send(embed=role_edit_embed)
+
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):  # role log
         if self.config['module']['log']['role'] and self.config['module']['events']:
@@ -130,11 +154,10 @@ class Events(commands.Cog):
             role_deleted_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=role_deleted_embed)
-    
+
     @commands.Cog.listener()
     async def on_member_join(self, member):  # member log
         if self.config['module']['log']['member'] and self.config['module']['events']:
-
             log_channel = self.client.get_channel(self.config['id']['log_channel'])
 
             member_join_embed = nextcord.Embed(
@@ -166,7 +189,7 @@ class Events(commands.Cog):
 
             await welcome_channel.send(embed=welcome_embed)
             # await general.send(content=f'Welcome to FallBurn {member.mention}!')
-    
+
     @commands.Cog.listener()
     async def on_member_remove(self, member):  # member log
         if self.config['module']['log']['member'] and self.config['module']['events']:
@@ -183,7 +206,30 @@ class Events(commands.Cog):
             member_left_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=member_left_embed)
-    
+
+    @commands.Cog.listener()
+    async def on_user_update(self, before, after):  # member log
+        if self.config['module']['log']['member'] and self.config['module']['events']:
+
+            log_channel = self.client.get_channel(self.config['id']['log_channel'])
+
+            user_update_embed = nextcord.Embed(
+                title=f'User {before.name} made a change',
+                color=self.config['embed']['color']['yellow']
+            )
+
+            user_update_embed.set_footer(text=self.config['embed']['footer'])
+
+            if not before.username == after.username:
+                user_update_embed.add_field(name='Username Before', value=before.username, inline=True)
+                user_update_embed.add_field(name='Username After', value=after.username, inline=True)
+                user_update_embed.add_field(name='\u200b', value='\u200b', inline=False)
+            if not before.avatar == after.avatar:
+                user_update_embed.add_field(name='Avatar Before', value=before.avatar, inline=True)
+                user_update_embed.add_field(name='Avatar After', value=after.avater, inline=True)
+
+            await log_channel.send(embed=user_update_embed)
+
     @commands.Cog.listener()
     async def on_invite_create(self, invite):  # invite log
         if self.config['module']['log']['invite'] and self.config['module']['events']:
@@ -199,7 +245,7 @@ class Events(commands.Cog):
             invite_create_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=invite_create_embed)
-    
+
     @commands.Cog.listener()
     async def on_invite_delete(self, invite):  # invite log
         if self.config['module']['log']['invite'] and self.config['module']['events']:
@@ -215,7 +261,7 @@ class Events(commands.Cog):
             invite_delete_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=invite_delete_embed)
-    
+
     @commands.Cog.listener()
     async def on_member_ban(self, _guild, user):  # mod log
         if self.config['module']['log']['mod'] and self.config['module']['events']:
@@ -256,7 +302,7 @@ class Events(commands.Cog):
                 color=self.config['embed']['color']['green']
             )
 
-            rule_create_embed(name='Name:', value=f'`{rule.name}`')
+            rule_create_embed.add_field(name='Name:', value=f'`{rule.name}`')
             rule_create_embed.add_field(name='Enabled:', value=rule.enabled)
             rule_create_embed.add_field(name='Trigger type:', value=f'`{rule.trigger_type}`', inline=True)
             rule_create_embed.add_field(name='Event type:', value=f'`{rule.event_type}`', inline=True)
@@ -279,7 +325,7 @@ class Events(commands.Cog):
                 color=self.config['embed']['color']['green']
             )
 
-            rule_update_embed(name='Name:', value=f'`{rule.name}`')
+            rule_update_embed.add_field(name='Name:', value=f'`{rule.name}`')
             rule_update_embed.add_field(name='Enabled:', value=rule.enabled)
             rule_update_embed.add_field(name='Trigger type:', value=f'`{rule.trigger_type}`', inline=True)
             rule_update_embed.add_field(name='Event type:', value=f'`{rule.event_type}`', inline=True)
@@ -324,6 +370,31 @@ class Events(commands.Cog):
             rule_execution_embed.set_footer(text=self.config['embed']['footer'])
 
             await log_channel.send(embed=rule_execution_embed)
+
+    # error handling
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        error_embed = nextcord.Embed(
+            title="❌ Error in the Bot", description="😞 Sorry we are facing an error while running this command.",
+            color=self.config["embed"]["color"]['red']
+        )
+        if isinstance(error, commands.errors.MissingRequiredArgument):
+            error_embed.add_field(
+                name="Error is described below.",
+                value=f"**Type:** {type(error)}\n\n```You're missing a required argument.```"
+            )
+            error_embed.set_footer(text=self.config["embed"]["footer"])
+            await ctx.send(embed=error_embed)
+        # self.logger.critical(f'Something went wrong, {error}')
+
+    @commands.Cog.listener()
+    async def on_application_command_error(self, interaction: nextcord.Interaction, error: Exception):
+        if isinstance(error, application_errors.ApplicationMissingRole):
+            role = interaction.guild.get_role(int(error.missing_role))
+            return await interaction.send(f"{role.mention} role is required to use this command.", ephemeral=True)
+        await interaction.send(f"This command raised an exception: `{type(error)}:{str(error)}`", ephemeral=True)
+        # self.logger.error(str(error)
 
 
 def setup(client):

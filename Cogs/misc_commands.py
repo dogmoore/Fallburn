@@ -4,7 +4,6 @@ import random
 import requests
 import json
 
-
 from typing import Optional
 from nextcord import slash_command, SlashOption
 from nextcord.ext import commands
@@ -89,7 +88,7 @@ class Misc(commands.Cog):
                     message: Optional[str] = SlashOption(required=True)):
         if self.config['module']['commands']['fun']:
             response = requests.get(f"http://api.urbandictionary.com/v0/define?term={message}")
-            dictionary = json.loads(response.text)['list']
+            dictionary = json.loads(response.text)['res_list']
             most_thumbs = -1
             best_definition = ""
             for definition in dictionary:
@@ -106,11 +105,11 @@ class Misc(commands.Cog):
             await interaction.response.send_message(embed=urban_embed)
 
     @slash_command(name='suggest',
-                    description='Suggest a change for the server',
-                    guild_ids=config['id']['guild'])
+                   description='Suggest a change for the server',
+                   guild_ids=config['id']['guild'])
     async def suggest(self, interaction: nextcord.Interaction, suggestion: Optional[str] = SlashOption(required=True)):
         suggest_channel = self.client.get_channel(self.config['id']['suggestion_channel'])
-        
+
         suggest_embed = nextcord.Embed(
             title=f'suggestion by {interaction.user}',
             description=suggestion,
@@ -120,6 +119,7 @@ class Misc(commands.Cog):
         suggest_embed.set_footer(text=self.config['embed']['footer'])
         await suggest_channel.send(embed=suggest_embed)
         await interaction.response.send_message('Your suggestion has been made', ephemeral=True)
+
 
 def setup(client):
     client.add_cog(Misc(client))
